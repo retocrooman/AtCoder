@@ -95,5 +95,4 @@ int main()
     }
     cout << res << endl;
     cout << res.size() << endl;
-    return 0;
 }
