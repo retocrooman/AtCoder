@@ -9,6 +9,7 @@ void output(vector<int> &a) {
     }
     cout << endl;
 }
+
 int main() {
     int N;
     cin >> N;
