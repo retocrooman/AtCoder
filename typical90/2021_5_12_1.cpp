@@ -5,7 +5,6 @@ using namespace std;
 class UnionFind {
 public:
         vector<int> par;
-
         void init(int sz) {
             par.resize(sz, -1);
         }
