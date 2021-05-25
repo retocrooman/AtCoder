@@ -19,7 +19,6 @@ int main() {
     REP(i, Q) {
         rep(j, 3) cin >> T.at(i).at(j);
     }
-
     int cnt = 0;
     int diff = 0;
     REP(i, Q) {
