@@ -10,6 +10,9 @@ const double pi=3.1415926535;
 int main() {
     vector<vector<int>> dp(900, vector<int>(900));
     vector<int> vec_output;
+    //通った道
+    vector<vector<int>> usei(1000), usej(1000);
+    vector<int> usedoutput(1000);
 
     rep(i, 1000) {
 
@@ -17,10 +20,8 @@ int main() {
         vector<int> input(4);
         rep(j, 4) cin >> input.at(j);
 
-        //通った道
-        vector<int> usei(0), usej(0);
-        usei.push_back(input.at(0));
-        usej.push_back(input.at(1));
+        usei.at(i).push_back(input.at(0));
+        usej.at(i).push_back(input.at(1));
 
         int x = input.at(1);
         int y = input.at(0);
@@ -30,6 +31,7 @@ int main() {
         if (x > input.at(3)) xplus = -1;
         if (y < input.at(2)) yplus = 1;
         if (y > input.at(2)) yplus = -1;
+        bool X = false;
 
         //経路探索
         while (x != input.at(3)) {
@@ -37,23 +39,35 @@ int main() {
             if (y == input.at(2)) {
                 while (x != input.at(3)) {
                     x += xplus;
-                    usei.push_back(y);
-                    usej.push_back(x);
+                    usei.at(i).push_back(y);
+                    usej.at(i).push_back(x);
                     cout << (xplus == 1 ? "R" : "L") << flush;
                 }
                 break;
             }
 
-            //短い道の方を選択する
-            if (dp.at(y*30 + x).at(y*30 + x+xplus) < dp.at(y*30 + x).at((y+yplus)*30 + x)) {
+            //探索済みか近いかを調べる
+            if (dp.at(y*30 + x).at(y*30 + x+xplus) == 0 && dp.at(y*30 + x).at((y+yplus)*30 + x) == 0) {
+                X = !X;
+            } else if (dp.at(y*30 + x).at(y*30 + x+xplus) == 0) {
+                X = true;
+            } else if (dp.at(y*30 + x).at((y+yplus)*30 + x) == 0) {
+                X = false;
+            } else if (dp.at(y*30 + x).at(y*30 + x+xplus) < dp.at(y*30 + x).at((y+yplus)*30 + x)) {
+                X = true;
+            } else if (dp.at(y*30 + x).at(y*30 + x+xplus) > dp.at(y*30 + x).at((y+yplus)*30 + x)) {
+                X = false;
+            }
+
+            if (X) {
                 x += xplus;
-                usei.push_back(y);
-                usej.push_back(x);
+                usei.at(i).push_back(y);
+                usej.at(i).push_back(x);
                 cout << (xplus == 1 ? "R" : "L") << flush;
             } else {
                 y += yplus;
-                usei.push_back(y);
-                usej.push_back(x);
+                usei.at(i).push_back(y);
+                usej.at(i).push_back(x);
                 cout << (yplus == 1 ? "D" : "U") << flush;
             }
         }
@@ -61,31 +75,55 @@ int main() {
         //yの残りをうめる
         while (y != input.at(2)) {
             y += yplus;
-            usei.push_back(y);
-            usej.push_back(x);
+            usei.at(i).push_back(y);
+            usej.at(i).push_back(x);
             cout << (yplus == 1 ? "D" : "U") << flush;
         }
         cout << endl;
 
         //入力
-        int output;
+        ll output;
         cin >> output;
 
         //点数の平均を計算
+        int size = usei.at(i).size();
+        output *= 60;
+        output /= size;
         vec_output.push_back(output);
-        int sum = 0;
-        for (int a : vec_output) {
+        ll sum = 0;
+        for (ll a : vec_output) {
             sum += a;
         }
-        int ave = sum / vec_output.size();
-
-        rep(j, usei.size()-1) {
-            int a = usei.at(j);
-            int b = usej.at(j);
-            int c = usei.at(j+1);
-            int d = usej.at(j+1);
-            //cout << a << " " << b << " " << c << " " << d << endl;
-            dp.at(a*30+b).at(c*30+d) += output - ave;
+        ll ave = sum / vec_output.size();
+        vector<ll> put_output;
+        for (ll a : vec_output) {
+            put_output.push_back(a-ave);
         }
+
+        rep(j, put_output.size()) {
+            put_output.at(j) -= usedoutput.at(j);
+            usedoutput.at(j) = put_output.at(j);
+            rep(k, usei.at(j).size()-1) {
+                int a = usei.at(j).at(k);
+                int b = usej.at(j).at(k);
+                int c = usei.at(j).at(k+1);
+                int d = usej.at(j).at(k+1);
+                //cout << a*30+b << " " << c*30+d << endl;
+                dp.at(a*30+b).at(c*30+d) += put_output.at(j);
+                dp.at(c*30+d).at(a*30+b) += put_output.at(j);
+            }
+        }
+
+        /*rep(j, 29) {
+            rep(k, 29) {
+                cout << " " << dp.at(j*30+k).at(j*30+k+1);
+            }
+            cout << endl;
+            rep(k, 30) {
+                cout << dp.at(j*30+k).at((j+1)*30+k) << " ";
+            }
+            cout << endl;
+        }*/
     }
 }
+
