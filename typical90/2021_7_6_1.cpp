@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define rep(i, n) for (ll i=0; i<(ll)(n); i++)
+#define rev_rep(i, n) for (ll i=(n); i > 0; i--)
+#define REP(i, n) for (ll i=1; i<=(ll)(n); i++)
+#define FOR(i, n, m) for (ll i=(n); i<=(ll)(m); i++)
+#define rev_FOR(i, n, m) for (ll i=(n); i>=(ll)(m); i--)
+#define ll long long
+#define ull unsigned long long
+#define vc vector<ll>
+#define vc2 vector<vector<ll>>
+#define vc3 vector<vector<vector<ll>>>
+#define vcd vector<double>
+#define vc2d vector<vector<double>>
+#define vc3d vector<vector<vector<double>>>
+#define vcs vector<string>
+#define vc2s vector<vector<string>>
+#define vc3s vector<vector<vector<string>>>
+#define ALL(vec) vec.begin(),vec.end()
+const ll INF=1LL<<60;
+const ll mod = 1000000007;
+const double pi=3.1415926535;
+const int dx[4] = {1, 0, -1, 0};
+const int dy[4] = {0, 1, 0, -1};
+template<class T>bool ch_max(T &a, const T &b) {if (a<b) {a = b; return 1; } return 0;}
+template<class T>bool ch_min(T &a, const T &b) {if (b<a) {a = b; return 1; } return 0;}
+
+ull L,R;
+ull power10[20];
+
+void init() {
+    power10[0] = 1;
+    REP(i, 19) power10[i] = 10*power10[i-1];
+}
+
+ll f(ll n) {
+    if(n&1) {
+        ll v1 = ((n+1ll)/2ll)%mod;
+        ll v2 = n%mod;
+        return v1 * v2 % mod;
+    }
+    else {
+        ll v1 = (n/2ll)%mod;
+        ll v2 = (n+1ll)%mod;
+        return v1 * v2 %mod;
+    }
+}
+
+int main() {
+    init();
+    cin >> L >> R;
+    ll ans = 0;
+    REP(i, 19) {
+        ull vl = max(L, power10[i-1]);
+        ull vr = min(R, power10[i]-1ull);
+        if(vl > vr) continue;
+        ll val = (f(vr) - f(vl - 1) + mod) % mod;
+        ans += i * val;
+        ans %= mod;
+    }
+    cout << ans << endl;
+}
